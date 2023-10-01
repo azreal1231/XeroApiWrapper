@@ -1,7 +1,7 @@
-AUTH_CODE = ''  # this comes from your appended redirect uri
+AUTH_CODE = 'qC4IeIIhXTu61CLJ0Oa3Ov1yW-B0jEffXlR08qiNywQ'  # this comes from your appended redirect uri
 
 DEFAULT_SETTINGS = {
-    'CLIENT_ID': '',
-    'CLIENT_SECRET': '',
-    'REDIRECT_URI': ''
+    'CLIENT_ID': '5117DC39414B48BB9BE16A317E000333',
+    'CLIENT_SECRET': '06-5Uv5hJBV36VfGIZ0RKkRQew_BW6tTjIcx8HfvLKMPj49D',
+    'REDIRECT_URI': 'https://shop.go-gas.co.za/service/xero'
 }

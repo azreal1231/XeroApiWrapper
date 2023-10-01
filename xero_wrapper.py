@@ -1,4 +1,5 @@
 from xml.etree import ElementTree
+from settings import DEFAULT_SETTINGS
 import requests
 import json
 
@@ -11,8 +12,8 @@ class XeroAPI:
         self.invoice_url = "https://api.xero.com/api.xro/2.0/Invoices"
         self.connection_url = "https://api.xero.com/connections"
 
-    def get_tokens(self, authorization_code, redirect_uri='https://slatelight.co.za'):
-        headers = {'Content-Type': 'application/x-www-form-urlencoded',}
+    def get_tokens(self, authorization_code, redirect_uri=DEFAULT_SETTINGS['REDIRECT_URI']):
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         data = {
             'grant_type': 'authorization_code',
             'code': authorization_code,
@@ -98,3 +99,26 @@ class XeroAPI:
                 return contact
 
         return None
+
+    def create_invoice(self, _access_token, _tenant_id, invoice_data):
+        headers = {
+            'Authorization': f'Bearer {_access_token}',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Xero-tenant-id': _tenant_id,
+        }
+
+        invoice_url = "https://api.xero.com/api.xro/2.0/Invoices"
+
+        response = requests.post(invoice_url, headers=headers, json={'Invoices': [invoice_data]})
+
+        if response.status_code == 200:
+            if response.headers.get('Content-Type') == 'application/json; charset=utf-8':
+                resp = json.loads(response.text)
+                return resp
+            elif response.headers.get('Content-Type') == 'application/xml':
+                tree = ElementTree.fromstring(response.content)
+                return tree
+        else:
+            print(f"Failed to create invoice, status code: {response.status_code}, message: {response.text}")
+            return None

@@ -1,5 +1,7 @@
+from xero_wrapper import XeroAPI
 import json
 from settings import AUTH_CODE, DEFAULT_SETTINGS
+from order_example import ORDER_EXAMPLE
 
 
 def update_tokens(_access_token, _refresh_token):
@@ -21,6 +23,7 @@ def update_tokens(_access_token, _refresh_token):
     with open(token_file_path, 'w') as f:
         json.dump(token_data, f, indent=4)
 
+
 # Example usage
 xero = XeroAPI(DEFAULT_SETTINGS['CLIENT_ID'], DEFAULT_SETTINGS['CLIENT_SECRET'])
 
@@ -29,31 +32,51 @@ xero = XeroAPI(DEFAULT_SETTINGS['CLIENT_ID'], DEFAULT_SETTINGS['CLIENT_SECRET'])
 # print(tokens)
 #
 # # Refreshing tokens
-# refreshed_tokens = xero.refresh_tokens(tokens['refresh_token'])
-# print(refreshed_tokens)
-# update_tokens(refreshed_tokens['access_token'], refreshed_tokens['refresh_token'])
 
 with open('token.json', 'r') as f:
     data = json.load(f)
     refresh_token = data['REFRESH_TOKEN']
     access_token = data['ACCESS_TOKEN']
 
+refreshed_tokens = xero.refresh_tokens(refresh_token)
+# print(refreshed_tokens)
+update_tokens(access_token, refresh_token)
 
 # Getting tenant_id
 tenant_id = xero.get_tenant_id(access_token)
 print(f"tenant_id: {tenant_id}")
 
-new_contact = {
-    "Name": "",
-    "EmailAddress": "",
-    "FirstName": "",
-    "LastName": "",
-    "DefaultCurrency": "RSA"
-}
-
-# Create the contact
-created_contact = xero.create_contact(access_token, tenant_id, new_contact)
+# new_contact = {
+#     "Name": "edward",
+#     "EmailAddress": "edward@slatelight.co.za",
+#     "FirstName": "edward",
+#     "LastName": "nicholls",
+#     "DefaultCurrency": "RSA"
+# }
+#
+# # Create the contact
+# created_contact = xero.create_contact(access_token, tenant_id, new_contact)
 # print(created_contact)
 
 contact_details = xero.get_contact_by_email(access_token, tenant_id, 'edward@slatelight.co.za')
 print(contact_details)
+
+#
+invoice_data = {
+    "Type": "ACCREC",
+    "Contact": {"ContactID": contact_details['ContactID']},
+    "Date": "2023-09-29",
+    "DueDate": "2023-10-29",
+    'LineAmountType': 'Exclusive',
+    "LineItems": [
+        {
+            "Description": "Product A",
+            "Quantity": 2,
+            "UnitAmount": 111.00,
+            "AccountCode": "200",
+        }
+    ]
+}
+
+result = xero.create_invoice(access_token, tenant_id, invoice_data)
+print(result)
