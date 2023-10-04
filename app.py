@@ -78,5 +78,29 @@ invoice_data = {
     ]
 }
 
+items = []
+for item in ORDER_EXAMPLE['meta_data']['products']:
+    tmp = {
+        "Description": item['name'],
+        "Quantity": item['quantity'],
+        "UnitAmount": item['price'],
+        "AccountCode": item['code'],
+    }
+    items.append(tmp)
+
+for item in ORDER_EXAMPLE['meta_data']['refillProducts']:
+    tmp = {
+        "Description": item['name'],
+        "Quantity": item['quantity'],
+        "UnitAmount": item['price'],
+        "AccountCode": item['code'],
+    }
+    items.append(tmp)
+
+payment_date = ORDER_EXAMPLE['meta_data']['payfast_resp']['date'][0: 16]
+invoice_data['LineItems'] = items
+invoice_data['Date'] = payment_date
+invoice_data['DueDate'] = payment_date
+
 result = xero.create_invoice(access_token, tenant_id, invoice_data)
 print(result)
