@@ -1,4 +1,4 @@
-AUTH_CODE = 'qC4IeIIhXTu61CLJ0Oa3Ov1yW-B0jEffXlR08qiNywQ'  # this comes from your appended redirect uri
+AUTH_CODE = 'C_RbHZTffKaE9aj5EaL2lGCLOZ7CoPidjjf7N9KOPdk'  # this comes from your appended redirect uri
 
 DEFAULT_SETTINGS = {
     'CLIENT_ID': '5117DC39414B48BB9BE16A317E000333',

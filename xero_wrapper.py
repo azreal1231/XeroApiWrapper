@@ -3,6 +3,16 @@ from settings import DEFAULT_SETTINGS
 import requests
 import json
 
+# ------------------------------------------------------------------------------
+# Copyright (c) 2023 Slatelight Pty Ltd
+#
+# This software is the property of Slatelight Pty Ltd. All rights reserved.
+# Redistribution, use, modification, or reproduction in any form without the
+# prior written consent of Slatelight Pty Ltd is strictly prohibited.
+#
+# Contact: [edward@slatelight.co.za]
+# ------------------------------------------------------------------------------
+
 
 class XeroAPI:
     def __init__(self, client_id, client_secret):
@@ -28,8 +38,8 @@ class XeroAPI:
             return {}
 
     def refresh_tokens(self, _refresh_token):
-        headers = {'Content-Type': 'application/x-www-form-urlencoded',}
-        data = {'grant_type': 'refresh_token', 'refresh_token': _refresh_token,}
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        data = {'grant_type': 'refresh_token', 'refresh_token': _refresh_token}
         response = requests.post(self.token_url, headers=headers, data=data, auth=(self.client_id, self.client_secret))
         if response.status_code == 200:
             tmp_tokens = json.loads(response.text)
@@ -121,4 +131,61 @@ class XeroAPI:
                 return tree
         else:
             print(f"Failed to create invoice, status code: {response.status_code}, message: {response.text}")
+            return None
+
+    def get_invoices_by_date_range(self, _access_token, _tenant_id, start_date, end_date):
+        headers = {
+            'Authorization': f'Bearer {_access_token}',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Xero-tenant-id': _tenant_id,
+        }
+
+        params = {
+            'where': f"Date >= DateTime({start_date}) AND Date <= DateTime({end_date})"
+        }
+
+        response = requests.get(self.invoice_url, headers=headers, params=params)
+        if response.status_code == 200:
+            if response.headers.get('Content-Type') == 'application/json; charset=utf-8':
+                resp = json.loads(response.text)
+                return resp.get('Invoices', [])
+            elif response.headers.get('Content-Type') == 'application/xml':
+                tree = ElementTree.fromstring(response.content)
+                # ... (parse XML to get the data you want)
+                return tree
+        else:
+            print(f"Failed to retrieve invoices, status code: {response.status_code}, message: {response.text}")
+            return None
+
+    def get_invoices_by_email(self, _access_token, _tenant_id, email):
+        contact = self.get_contact_by_email(_access_token, _tenant_id, email)
+        if contact:
+            contact_id = contact.get('ContactID')
+
+            headers = {
+                'Authorization': f'Bearer {_access_token}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Xero-tenant-id': _tenant_id,
+            }
+
+            params = {
+                'where': f"Contact.ContactID == GUID(\"{contact_id}\")"
+            }
+
+            response = requests.get(self.invoice_url, headers=headers, params=params)
+            if response.status_code == 200:
+                if response.headers.get('Content-Type') == 'application/json; charset=utf-8':
+                    resp = json.loads(response.text)
+                    return resp.get('Invoices', [])
+                elif response.headers.get('Content-Type') == 'application/xml':
+                    tree = ElementTree.fromstring(response.content)
+                    # ... (parse XML to get the data you want)
+                    return tree
+            else:
+                print(f"Failed to retrieve invoices, status code: {response.status_code}, message: {response.text}")
+                return None
+        else:
+            print(f"Failed to find contact with email: {email}")
             return None
