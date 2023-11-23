@@ -189,3 +189,50 @@ class XeroAPI:
         else:
             print(f"Failed to find contact with email: {email}")
             return None
+
+    def get_all_accounts(self, _access_token, _tenant_id):
+        accounts_url = "https://api.xero.com/api.xro/2.0/Accounts"
+
+        headers = {
+            'Authorization': f'Bearer {_access_token}',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Xero-tenant-id': _tenant_id,
+        }
+
+        response = requests.get(accounts_url, headers=headers)
+
+        if response.status_code == 200:
+            if response.headers.get('Content-Type') == 'application/json; charset=utf-8':
+                accounts_data = json.loads(response.text)
+                return accounts_data.get('Accounts', [])
+            elif response.headers.get('Content-Type') == 'application/xml':
+                # Parse XML to get the data you want
+                tree = ElementTree.fromstring(response.content)
+                # ... (parse XML to get the data you want)
+                return tree
+        else:
+            print(f"Failed to retrieve accounts, status code: {response.status_code}, message: {response.text}")
+            return None
+
+    def create_credit_note(self, _access_token, _tenant_id, credit_note_data):
+        credit_note_url = "https://api.xero.com/api.xro/2.0/CreditNotes"
+        headers = {
+            'Authorization': f'Bearer {_access_token}',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Xero-tenant-id': _tenant_id,
+        }
+
+        response = requests.post(credit_note_url, headers=headers, json={'CreditNotes': [credit_note_data]})
+
+        if response.status_code == 200:
+            if response.headers.get('Content-Type') == 'application/json; charset=utf-8':
+                resp = json.loads(response.text)
+                return resp
+            elif response.headers.get('Content-Type') == 'application/xml':
+                tree = ElementTree.fromstring(response.content)
+                return tree
+        else:
+            print(f"Failed to create credit note, status code: {response.status_code}, message: {response.text}")
+            return None
