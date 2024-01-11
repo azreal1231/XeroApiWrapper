@@ -98,8 +98,9 @@ for item in ORDER_EXAMPLE['meta_data']['refillProducts']:
         "Description": item['name'],
         "Quantity": item['quantity'],
         "UnitAmount": item['price'],
-        "TaxType": "OUTPUT",
-        "AccountCode": "201"
+        "CurrencyCode": "ZAR",
+        "TaxType": "VAT",
+        "AccountCode": "220",
     }
     items.append(tmp)
 
@@ -110,25 +111,25 @@ invoice_data['DueDate'] = payment_date
 
 result = xero.create_invoice(access_token, tenant_id, invoice_data)
 print(result)
-credit_note_data = {
-    'Type': 'ACCPAYCREDIT',  # Accounts payable credit note
-    'Contact': {
-        'Name': contact_details['Name'],
-        "ContactID": contact_details['ContactID']
-    },
-    'LineItems': [
-        {
-            'Description': 'Credit for returned item',
-            'Quantity': 1,
-            'UnitAmount': 50.00,
-            'AccountCode': '400'  # Appropriate account code
-        }
-    ],
-    'Date': '2023-01-01',  # Date of the credit note
-    'Status': 'AUTHORISED',  # Status of the credit note
-    'LineAmountTypes': 'Exclusive',  # How line amounts are treated
-    # Additional fields as needed
-}
+# credit_note_data = {
+#     'Type': 'ACCPAYCREDIT',  # Accounts payable credit note
+#     'Contact': {
+#         'Name': contact_details['Name'],
+#         "ContactID": contact_details['ContactID']
+#     },
+#     'LineItems': [
+#         {
+#             'Description': 'Credit for returned item',
+#             'Quantity': 1,
+#             'UnitAmount': 50.00,
+#             'AccountCode': '220'  # Appropriate account code
+#         }
+#     ],
+#     'Date': '2023-01-01',  # Date of the credit note
+#     'Status': 'AUTHORISED',  # Status of the credit note
+#     'LineAmountTypes': 'Exclusive',  # How line amounts are treated
+#     # Additional fields as needed
+# }
 
 # resp = xero.create_credit_note(access_token, tenant_id, credit_note_data)
 # print(resp)
