@@ -236,3 +236,30 @@ class XeroAPI:
         else:
             print(f"Failed to create credit note, status code: {response.status_code}, message: {response.text}")
             return None
+
+    def allocate_credit_note(self, _access_token, _tenant_id, _credit_note_id, _invoice_id, _amount):
+        allocation_url = f"https://api.xero.com/api.xro/2.0/CreditNotes/{_credit_note_id}/Allocations"
+        headers = {
+            'Authorization': f'Bearer {_access_token}',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Xero-tenant-id': _tenant_id,
+        }
+
+        allocation_data = {
+            "Allocations": [
+                {
+                    "Invoice": {"InvoiceID": _invoice_id},
+                    "Amount": _amount
+                }
+            ]
+        }
+
+        response = requests.post(allocation_url, headers=headers, json=allocation_data)
+
+        if response.status_code == 200:
+            resp = json.loads(response.text)
+            return resp
+        else:
+            print(f"Failed to allocate credit note, status code: {response.status_code}, message: {response.text}")
+            return None

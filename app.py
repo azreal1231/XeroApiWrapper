@@ -47,13 +47,15 @@ access_token = refreshed_tokens['access_token']
 tenant_id = xero.get_tenant_id(access_token)
 print(f"tenant_id: {tenant_id}")
 
+# exit()
+
 # results = xero.get_invoices_by_email(access_token, tenant_id, 'edward@slatelight.co.za')
 # print(results)
 new_contact = {
-    "Name": "edward",
-    "EmailAddress": "jack4@slatelight.co.za",
+    "Name": "slatelight Pty Ltd",
     "FirstName": "jack",
     "LastName": "nicholls",
+    "EmailAddress": "jack14@slatelight.co.za",
     "DefaultCurrency": "RSA"
 }
 
@@ -64,7 +66,7 @@ new_contact = created_contact['Contacts'][0]
 # accounts = xero.get_all_accounts(access_token, tenant_id)
 # print(accounts)
 
-contact_details = xero.get_contact_by_email(access_token, tenant_id, 'jack4@slatelight.co.za')
+contact_details = xero.get_contact_by_email(access_token, tenant_id, 'jack14@slatelight.co.za')
 if contact_details is None:
     '''Create Contact'''
 else:
@@ -109,7 +111,7 @@ invoice_data['LineItems'] = items
 invoice_data['Date'] = payment_date
 invoice_data['DueDate'] = payment_date
 
-result = xero.create_invoice(access_token, tenant_id, invoice_data)
+# result = xero.create_invoice(access_token, tenant_id, invoice_data)
 print(result)
 # credit_note_data = {
 #     'Type': 'ACCPAYCREDIT',  # Accounts payable credit note
